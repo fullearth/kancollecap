@@ -37,7 +37,7 @@ class MainFrame(wx.Frame):
     def onClickShot(self, e):
         # todo:座標取得できていればSSをとり、できていなければ座標を取得してからSSをとる
         # とりあえずの実装
-        camera = kc.KCCamera()
+        camera = kc.KCCamera(self)
         camera.captureGameArea()
         print ("onclickshot")
         pass
