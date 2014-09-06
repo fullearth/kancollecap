@@ -1,4 +1,6 @@
 # coding:utf-8
+import datetime
+import os
 
 import cv2
 import wx
@@ -13,6 +15,7 @@ class KCCamera:
         self.y = 0
         self.width = 0
         self.height = 0
+        self.snapShotDir = 'snapshot'
 
     def getScreenImage(self):
         pilImage = ImageGrab.grab().convert('RGB')
@@ -73,7 +76,18 @@ class KCCamera:
             print ("cannot find game area")
             return
         self.showCaptureArea()
-        cv2.imwrite('game.png', img[y:y+h, x:x+w])
+        self.saveImage(img[y:y+h, x:x+w])
+
+    # とりあえず保存するファイル名とディレクトリは固定
+    def saveImage(self, img):
+        date = datetime.datetime.now()
+        filename = "game" + date.strftime("%Y-%m-%d_%H%M%S_%f") + ".png"
+        if not os.path.isdir(self.snapShotDir):
+            os.mkdir(self.snapShotDir)
+        subDir = date.strftime("%Y%m%d")
+        if not os.path.isdir(self.snapShotDir + "/" + subDir):
+            os.mkdir(self.snapShotDir + "/" + subDir)
+        cv2.imwrite(self.snapShotDir + '/' + subDir + '/' + filename, img)
 
 if __name__ == '__main__':
     camera = KCCamera()
