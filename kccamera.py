@@ -76,8 +76,10 @@ class KCCamera:
             print ("cannot find game area")
             return
         self.showCaptureArea()
-        # todo:多分save用のメソッドを作ったほうがよさげ
-        # filenameとかsubDirとか生成メソッドがこの後必要になりそう
+        self.saveImage(img[y:y+h, x:x+w])
+
+    # とりあえず保存するファイル名とディレクトリは固定
+    def saveImage(self, img):
         date = datetime.datetime.now()
         filename = "game" + date.strftime("%Y-%m-%d_%H%M%S_%f") + ".png"
         if not os.path.isdir(self.snapShotDir):
@@ -85,7 +87,7 @@ class KCCamera:
         subDir = date.strftime("%Y%m%d")
         if not os.path.isdir(self.snapShotDir + "/" + subDir):
             os.mkdir(self.snapShotDir + "/" + subDir)
-        cv2.imwrite(self.snapShotDir + '/' + subDir + '/' + filename, img[y:y+h, x:x+w])
+        cv2.imwrite(self.snapShotDir + '/' + subDir + '/' + filename, img)
 
 if __name__ == '__main__':
     camera = KCCamera()
