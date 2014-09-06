@@ -77,12 +77,15 @@ class KCCamera:
             return
         self.showCaptureArea()
         # todo:多分save用のメソッドを作ったほうがよさげ
+        # filenameとかsubDirとか生成メソッドがこの後必要になりそう
         date = datetime.datetime.now()
-        filename = "game" + str(date.year) + "-" + str(date.month) + "-" + str(date.day) + "-" + str(date.hour) + "-" + str(date.minute) + "-" + str(date.second) + "-" + str(date.microsecond) + ".png"
+        filename = "game" + date.strftime("%Y-%m-%d_%H%M%S_%f") + ".png"
         if not os.path.isdir(self.snapShotDir):
             os.mkdir(self.snapShotDir)
-        # cv2.imwrite("game/game.png", img[y:y+h, x:x+w])
-        cv2.imwrite(self.snapShotDir + '/' + filename, img[y:y+h, x:x+w])
+        subDir = date.strftime("%Y%m%d")
+        if not os.path.isdir(self.snapShotDir + "/" + subDir):
+            os.mkdir(self.snapShotDir + "/" + subDir)
+        cv2.imwrite(self.snapShotDir + '/' + subDir + '/' + filename, img[y:y+h, x:x+w])
 
 if __name__ == '__main__':
     camera = KCCamera()
