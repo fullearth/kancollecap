@@ -35,6 +35,7 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_KEY_DOWN, self.onKeyDown)
         self.Bind(wx.EVT_BUTTON, self.onClickShot, shotButton)
         self.Bind(wx.EVT_MOVE, self.onMove)
+        self.Bind(wx.EVT_ICONIZE, self.onIconize)
 
     def onKeyDown(self, event):
         keycode = event.GetKeyCode()
@@ -50,6 +51,12 @@ class MainFrame(wx.Frame):
 
     def onMove(self, e):
         self.adjustViewWindow()
+
+    def onIconize(self, e):
+        if e.Iconized():
+            self.viewWindow.Show(False)
+        else:
+            self.viewWindow.Show(True)
 
     def createViewWindow(self):
         prewindow = wx.Frame(self, -1)
