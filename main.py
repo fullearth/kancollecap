@@ -12,6 +12,7 @@ class MainFrame(wx.Frame):
                           title=title,
                           style=wx.CAPTION | wx.MINIMIZE_BOX | wx.SYSTEM_MENU | wx.CLOSE_BOX | wx.CLIP_CHILDREN,
                           size=wx.Size(160, 160))
+        self.viewWindow = None
         # todo:self
         shotButton = wx.Button(self, -1, "SHOT")
         showConfigChk = wx.CheckBox(self, -1, "config")
@@ -25,9 +26,14 @@ class MainFrame(wx.Frame):
         style = self.GetWindowStyle()
         self.SetWindowStyle(style | wx.STAY_ON_TOP)
 
+        self.viewWindow = self.createViewWindow()
+        self.adjustViewWindow()
+        self.viewWindow.Show(True)
+
         # bind
         self.Bind(wx.EVT_KEY_DOWN, self.onKeyDown)
         self.Bind(wx.EVT_BUTTON, self.onClickShot, shotButton)
+        self.Bind(wx.EVT_MOVE, self.onMove)
 
     def onKeyDown(self, event):
         keycode = event.GetKeyCode()
@@ -40,7 +46,27 @@ class MainFrame(wx.Frame):
         camera = kc.KCCamera(self)
         camera.captureGameArea()
         print ("onclickshot")
+
+    def onMove(self, e):
+        self.adjustViewWindow()
+
+    def createViewWindow(self):
+        prewindow = wx.Frame(self, -1)
+        prewindow.SetWindowStyle(wx.NO_BORDER)
+        return prewindow
+
+    def adjustViewWindow(self):
+        if self.viewWindow is None:
+            return
+        # todo:メインウィンドウがsizableになるまで数値直打ち
+        mainPos = self.GetPosition()
+        mainSize = self.GetSize()
+        self.viewWindow.SetSize(wx.Size(mainSize.width, 96))
+        self.viewWindow.SetPosition(wx.Point(mainPos.x, mainPos.y + mainSize.height))
+
+    def drawView(self):
         pass
+
 
 if __name__ == '__main__':
     app = wx.App()
