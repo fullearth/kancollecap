@@ -55,6 +55,7 @@ class MainFrame(wx.Frame):
         prewindow = wx.Frame(self, -1)
         prewindow.SetWindowStyle(wx.NO_BORDER | wx.STAY_ON_TOP)
         prewindow.Bind(wx.EVT_PAINT, self.onViewPaint)
+        # todo:add and bind onclick event
         return prewindow
 
     def adjustViewWindow(self):
@@ -66,18 +67,21 @@ class MainFrame(wx.Frame):
         self.viewWindow.SetSize(wx.Size(mainSize.width, 96))
         self.viewWindow.SetPosition(wx.Point(mainPos.x, mainPos.y + mainSize.height))
 
-    def drawView(self):
-        pass
-
     def onViewPaint(self, e):
         dc = wx.PaintDC(self.viewWindow)
         if self.camera.recentImage is None:
             dc.Clear()
+            dc.SetPen(wx.Pen(wx.Colour(50, 50, 50), style=wx.DOT))
+            dc.SetBrush(wx.Brush(self.viewWindow.GetBackgroundColour()))
+            w, h = dc.GetSize()
+            dc.DrawRectangle(w/8, h/8, w*3/4, h*3/4)
+            dc.DrawCircle(w/2,h/2,h/8)
             return
-        # opencv(numpy) to bitmap
+        # opencv(numpy) into wx.Image
         size = self.viewWindow.GetSize()
         viewImage = wx.EmptyImage(size.width, size.height)
         viewImage.SetData(self.camera.getStringFromImage(self.camera.resizeImage(self.camera.recentImage, size.width, size.height)))
+        # wx.Image into bitmap
         bmp = viewImage.ConvertToBitmap()
         dc.DrawBitmap(bmp, 0, 0)
 
