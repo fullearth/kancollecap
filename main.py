@@ -13,6 +13,7 @@ class MainFrame(wx.Frame):
                           style=wx.CAPTION | wx.MINIMIZE_BOX | wx.SYSTEM_MENU | wx.CLOSE_BOX | wx.CLIP_CHILDREN,
                           size=wx.Size(160, 160))
         self.viewWindow = None
+        self.camera = kc.KCCamera(self)
         # todo:self
         shotButton = wx.Button(self, -1, "SHOT")
         showConfigChk = wx.CheckBox(self, -1, "config")
@@ -43,8 +44,8 @@ class MainFrame(wx.Frame):
     def onClickShot(self, e):
         # todo:座標取得できていればSSをとり、できていなければ座標を取得してからSSをとる
         # とりあえずの実装
-        camera = kc.KCCamera(self)
-        camera.captureGameArea()
+        self.camera.captureGameArea()
+        self.viewWindow.Refresh()
         print ("onclickshot")
 
     def onMove(self, e):
@@ -52,7 +53,8 @@ class MainFrame(wx.Frame):
 
     def createViewWindow(self):
         prewindow = wx.Frame(self, -1)
-        prewindow.SetWindowStyle(wx.NO_BORDER)
+        prewindow.SetWindowStyle(wx.NO_BORDER | wx.STAY_ON_TOP)
+        prewindow.Bind(wx.EVT_PAINT, self.onViewPaint)
         return prewindow
 
     def adjustViewWindow(self):
@@ -66,6 +68,18 @@ class MainFrame(wx.Frame):
 
     def drawView(self):
         pass
+
+    def onViewPaint(self, e):
+        dc = wx.PaintDC(self.viewWindow)
+        if self.camera.recentImage is None:
+            dc.Clear()
+            return
+        # opencv(numpy) to bitmap
+        size = self.viewWindow.GetSize()
+        viewImage = wx.EmptyImage(size.width, size.height)
+        viewImage.SetData(self.camera.getStringFromImage(self.camera.resizeImage(self.camera.recentImage, size.width, size.height)))
+        bmp = viewImage.ConvertToBitmap()
+        dc.DrawBitmap(bmp, 0, 0)
 
 
 if __name__ == '__main__':
