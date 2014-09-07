@@ -53,9 +53,9 @@ class MainFrame(wx.Frame):
 
     def createViewWindow(self):
         prewindow = wx.Frame(self, -1)
-        prewindow.SetWindowStyle(wx.NO_BORDER | wx.STAY_ON_TOP)
+        prewindow.SetWindowStyle(wx.NO_BORDER | wx.STAY_ON_TOP | wx.FRAME_TOOL_WINDOW)
         prewindow.Bind(wx.EVT_PAINT, self.onViewPaint)
-        # todo:add and bind onclick event
+        # todo:add and bind onclick event for large window
         return prewindow
 
     def adjustViewWindow(self):
