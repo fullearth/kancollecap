@@ -16,12 +16,15 @@ class KCCamera:
         self.width = 0
         self.height = 0
         self.snapShotDir = 'snapshot'
+        self.recentImage = None
 
     def getScreenImage(self):
+        # convert('RGB')とreshapeは明示的に書いているだけで書かなくても動く
         pilImage = ImageGrab.grab().convert('RGB')
         # pilをcv2(numpy)に変換
         srcimg = np.array(pilImage, dtype=np.uint8)
-        srcimg.reshape((pilImage.size[0], pilImage.size[1], 3))
+        # なくても動くどころかsize[0]とsize[1]を逆にしても動いたのでコメントアウト
+        # srcimg.reshape((pilImage.size[1], pilImage.size[0], 3))
         # RGB to BGR
         srcimg = srcimg[:,:,::-1]
         return srcimg
@@ -76,6 +79,8 @@ class KCCamera:
             print ("cannot find game area")
             return
         self.showCaptureArea()
+        # numpyは行列
+        self.recentImage = img[y:y+h, x:x+w]
         self.saveImage(img[y:y+h, x:x+w])
 
     # とりあえず保存するファイル名とディレクトリは固定
@@ -88,6 +93,13 @@ class KCCamera:
         if not os.path.isdir(self.snapShotDir + "/" + subDir):
             os.mkdir(self.snapShotDir + "/" + subDir)
         cv2.imwrite(self.snapShotDir + '/' + subDir + '/' + filename, img)
+
+    def resizeImage(self, src, dstx, dsty):
+        return cv2.resize(src, (dstx, dsty))
+
+    def getStringFromImage(self, src):
+        srcrgb = src[:,:,::-1]
+        return srcrgb.tostring()
 
 if __name__ == '__main__':
     camera = KCCamera()
