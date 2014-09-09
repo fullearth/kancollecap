@@ -30,7 +30,6 @@ class KCCamera:
         return srcimg
 
     # src:srcimg -> x,y,w,h or None(or exception)
-    # todo:失敗したら例外
     def findGameArea(self, src):
         grayimg = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
         # to binary 255 or else
@@ -83,11 +82,12 @@ class KCCamera:
             self.showCaptureArea()
             if w == 0 or h == 0:
                 print ("cannot find game area")
-                return
+                return False
         # self.showCaptureArea()
         # numpyは行列
         self.recentImage = img[self.y:self.y+self.height, self.x:self.x+self.width]
         self.saveImage(img[self.y:self.y+self.height, self.x:self.x+self.width])
+        return True
 
     # とりあえず保存するファイル名とディレクトリは固定
     def saveImage(self, img):

@@ -49,7 +49,8 @@ class MainFrame(wx.Frame):
     def onClickShot(self, e):
         # todo:座標取得できていればSSをとり、できていなければ座標を取得してからSSをとる
         # とりあえずの実装
-        self.camera.captureGameArea()
+        if not self.camera.captureGameArea():
+            wx.MessageBox(u"ゲームエリアを検出できませんでした", "error")
         self.viewWindow.Refresh()
         # print ("onclickshot")
 
@@ -67,6 +68,8 @@ class MainFrame(wx.Frame):
         if not (w == 0 or h == 0):
             self.camera.showCaptureArea()
             self.viewWindow.Refresh()
+        else:
+            wx.MessageBox(u"ゲームエリアを検出できませんでした", "error")
 
     def createViewWindow(self):
         prewindow = wx.Frame(self, -1)
