@@ -19,9 +19,11 @@ class MainFrame(wx.Frame):
         # todo:self
         shotButton = wx.Button(self, -1, "SHOT")
         showConfigChk = wx.CheckBox(self, -1, "config")
+        getAreaButton = wx.Button(self, -1, u"範囲")
         # sizer
         layout = wx.BoxSizer(wx.VERTICAL)
         layout.Add(shotButton, flag=wx.GROW, proportion=1)
+        layout.Add(getAreaButton, flag=wx.GROW)
         layout.Add(showConfigChk, flag=wx.BOTTOM)
         self.SetSizer(layout)
 
@@ -37,6 +39,7 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.onClickShot, shotButton)
         self.Bind(wx.EVT_MOVE, self.onMove)
         self.Bind(wx.EVT_ICONIZE, self.onIconize)
+        self.Bind(wx.EVT_BUTTON, self.onAreaButton, getAreaButton)
 
     def onKeyDown(self, event):
         keycode = event.GetKeyCode()
@@ -58,6 +61,12 @@ class MainFrame(wx.Frame):
             self.viewWindow.Show(False)
         else:
             self.viewWindow.Show(True)
+
+    def onAreaButton(self, e):
+        x,y,w,h = self.camera.findGameArea(self.camera.getScreenImage())
+        if not (w == 0 or h == 0):
+            self.camera.showCaptureArea()
+            self.viewWindow.Refresh()
 
     def createViewWindow(self):
         prewindow = wx.Frame(self, -1)

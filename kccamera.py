@@ -30,6 +30,7 @@ class KCCamera:
         return srcimg
 
     # src:srcimg -> x,y,w,h or None(or exception)
+    # todo:失敗したら例外
     def findGameArea(self, src):
         grayimg = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
         # to binary 255 or else
@@ -45,8 +46,11 @@ class KCCamera:
             if np.size(cnt) == 8 and area == 799 * 479:
                 self.x,self.y,self.width,self.height = cv2.boundingRect(cnt)
                 break
+        if not (self.width == 0 or self.height == 0):
+            self.recentImage = src[self.y:self.y+self.height, self.x:self.x+self.width]
         return (self.x,self.y,self.width,self.height)
 
+    # todo:mainに移動,
     def showCaptureArea(self):
         THICKNESS = 2
         frame = wx.Frame(self.parent)
@@ -74,14 +78,16 @@ class KCCamera:
     # 検出していない判定と処理が雑
     def captureGameArea(self):
         img = self.getScreenImage()
-        x,y,w,h = self.findGameArea(img)
-        if w == 0:
-            print ("cannot find game area")
-            return
-        self.showCaptureArea()
+        if self.width == 0 or self.height == 0:
+            x,y,w,h = self.findGameArea(img)
+            self.showCaptureArea()
+            if w == 0 or h == 0:
+                print ("cannot find game area")
+                return
+        # self.showCaptureArea()
         # numpyは行列
-        self.recentImage = img[y:y+h, x:x+w]
-        self.saveImage(img[y:y+h, x:x+w])
+        self.recentImage = img[self.y:self.y+self.height, self.x:self.x+self.width]
+        self.saveImage(img[self.y:self.y+self.height, self.x:self.x+self.width])
 
     # とりあえず保存するファイル名とディレクトリは固定
     def saveImage(self, img):
