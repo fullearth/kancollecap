@@ -38,16 +38,29 @@ class KCCamera:
         imgBinary = cv2.bitwise_not(imgBinary)
         # 頂点探索
         contours, ret = cv2.findContours(imgBinary, mode=cv2.RETR_LIST, method=cv2.CHAIN_APPROX_SIMPLE)
+        # srcimg = src.copy()
         self.x,self.y,self.width,self.height = (0,0,0,0)
         for cnt in contours:
             area = cv2.contourArea(cnt)
             # ゲーム画面の面積で判定。仕様上縦横-1
-            if np.size(cnt) == 8 and area == 799 * 479:
+            # (x, y)の組が4つでsize == 8
+            # if np.size(cnt) == 8 and 799 * 476 <= area and area <= 799 * 479:
+            # コモン艦娘ドロップ時の背景に(255,255,255)を使っている部分があるのでarea==799*479決め打ちだと死ぬ上に頂点が4つじゃない
+            # おおまかにそれっぽい面積で絞っておいてrectangleを取り、widthとheightがゲーム画面と一致したらその値を返す
+            if 800 * 400 <= area and area <= 799 * 479:
+                # debug
+                # cv2.drawContours(srcimg, cnt, -1, (255, 0, 0), 5)
                 self.x,self.y,self.width,self.height = cv2.boundingRect(cnt)
-                break
-        if not (self.width == 0 or self.height == 0):
-            self.recentImage = src[self.y:self.y+self.height, self.x:self.x+self.width]
-        return (self.x,self.y,self.width,self.height)
+                if self.width == 800 and self.height == 480:
+                    return (self.x,self.y,self.width,self.height)
+        # cv2.imshow("aa", srcimg)
+        # cv2.waitKey(0)
+
+        # 見つからなかった時の処理が残っていたので一時コメントアウト
+        # if not (self.width == 0 or self.height == 0):
+        #     self.recentImage = src[self.y:self.y+self.height, self.x:self.x+self.width]
+        # return (self.x,self.y,self.width,self.height)
+        return (0,0,0,0)
 
     # todo:mainに移動,
     def showCaptureArea(self):
@@ -73,7 +86,6 @@ class KCCamera:
         frame.Bind(wx.EVT_TIMER, ontimer)
 
     # test
-    # todo:毎回findgameareaしていたら重い
     # 検出していない判定と処理が雑
     def captureGameArea(self):
         img = self.getScreenImage()
