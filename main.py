@@ -18,13 +18,13 @@ class MainFrame(wx.Frame):
         self.popupWindow = None
         # todo:self
         shotButton = wx.Button(self, -1, "SHOT")
-        showConfigChk = wx.CheckBox(self, -1, "config")
+        # showConfigChk = wx.CheckBox(self, -1, "config")
         getAreaButton = wx.Button(self, -1, u"範囲")
         # sizer
         layout = wx.BoxSizer(wx.VERTICAL)
         layout.Add(shotButton, flag=wx.GROW, proportion=1)
         layout.Add(getAreaButton, flag=wx.GROW)
-        layout.Add(showConfigChk, flag=wx.BOTTOM)
+        # layout.Add(showConfigChk, flag=wx.BOTTOM)
         self.SetSizer(layout)
 
         style = self.GetWindowStyle()
